@@ -64,7 +64,6 @@ async function run () {
             const orders = await cursor.toArray();
             
             if(query){
-                console.log(query)
                 const searchResult = orders.filter(order=>order.email===query);
                 res.json(searchResult);
             }
@@ -89,14 +88,12 @@ async function run () {
             const id = req.params.id;
             const query = { _id: ObjectId(id) };
             const product = await productCollection.findOne(query);
-            
             res.send(product)
         });
 
         app.get('/users', async(req, res) =>{
             const cursor = userCollection.find({});
             const users = await cursor.toArray();
-            
             res.json(users);
         })
         app.post('/users', async(req, res) =>{
@@ -132,6 +129,27 @@ async function run () {
             const result = await userCollection.updateOne(filter, updateDoc);
             res.json(result);
 
+        })
+
+        app.put('/orders/status', async (req, res) =>{
+            const order = req.body;
+            const filter = {status: order.status}
+            const updateDoc = {$set: {status:'Shipped'}}
+            const result = await orderCollection.updateOne(filter, updateDoc);
+            res.json(result)
+        })
+
+        app.delete('/products/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const result = await productCollection.deleteOne(query);
+            res.json(result);
+        })
+        app.delete('/orders/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const result = await orderCollection.deleteOne(query);
+            res.json(result);
         })
         
 
